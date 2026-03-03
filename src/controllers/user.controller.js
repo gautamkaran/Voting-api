@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-import { EmailSenderMethod } from "../utils/EmailSenderMedhod.js";
+import { sendEmail } from "../utils/EmailSenderMedhod.js";
 import jwt from "jsonwebtoken";
 
 const genreteAccessAndRefreshToken = async (userId) => {
@@ -400,7 +400,7 @@ const forgetProfilePassword = async (req, res) => {
     await user.save();
 
     // Step5: Send to email to their OTP
-    await EmailSenderMethod(
+    await sendEmail(
       user.email,
       "forget password",
       `
