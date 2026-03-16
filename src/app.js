@@ -20,13 +20,6 @@ const swaggerDocument = YAML.parse(
   )
 );
 
-const publicHostUrl = process.env.VOTING_API_HOST_URL || "http://localhost:8080";
-const isTrustworthyOrigin =
-  publicHostUrl.startsWith("https://") ||
-  publicHostUrl.startsWith("http://") ||
-  publicHostUrl.includes("localhost") ||
-  publicHostUrl.includes("127.0.0.1");
-
 // cors setup here
 app.use(
   cors({
@@ -35,14 +28,7 @@ app.use(
   })
 );
 
-app.use(
-  helmet({
-    // Keep isolation headers uniform on all routes for HTTP/IP deployments.
-    crossOriginOpenerPolicy: false,
-    originAgentCluster: false,
-  })
-);
-
+app.use(helmet()); // use helmet.js to secure HTTP headers
 app.use(express.json({ limit: "16kb" })); // form data
 app.use(express.urlencoded({ extended: true, limit: "16kb" })); // url data
 app.use(express.static("public"));
