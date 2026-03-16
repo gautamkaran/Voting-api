@@ -36,10 +36,9 @@ app.use(
 
 app.use(
   helmet({
-    // COOP is ignored on non-trustworthy origins (for example plain HTTP on VPS IP).
-    crossOriginOpenerPolicy: isTrustworthyOrigin ? undefined : false,
-    // Origin-Agent-Cluster can warn on plain HTTP IP origins; keep it for HTTPS/localhost only.
-    originAgentCluster: isTrustworthyOrigin ? undefined : false,
+    // Keep isolation headers uniform on all routes for HTTP/IP deployments.
+    crossOriginOpenerPolicy: false,
+    originAgentCluster: false,
   })
 );
 
