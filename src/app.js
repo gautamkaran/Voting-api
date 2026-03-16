@@ -23,6 +23,7 @@ const swaggerDocument = YAML.parse(
 const publicHostUrl = process.env.VOTING_API_HOST_URL || "http://localhost:8080";
 const isTrustworthyOrigin =
   publicHostUrl.startsWith("https://") ||
+  publicHostUrl.startsWith("http://") ||
   publicHostUrl.includes("localhost") ||
   publicHostUrl.includes("127.0.0.1");
 
