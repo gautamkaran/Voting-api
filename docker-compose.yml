@@ -1,30 +1,51 @@
 services:
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./Public:/usr/share/nginx/html:ro
+    depends_on:
+      - voting-api
+    networks:
+      - voting-network
+
   voting-api:
     build: .
     restart: unless-stopped
     hostname: voting-api
     ports:
-      - "3000:3000"
+      - "3000"
     environment:
       PORT: ${PORT:-3000}
       MONGODB_URL: ${MONGODB_URL:-mongodb://mongodb:27017}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://YOUR_FRONTEND_DOMAIN}
-      VOTING_API_HOST_URL: ${VOTING_API_HOST_URL:-http://YOUR_VPS_IP:3000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://voting.gautamkaran.in}
+      VOTING_API_HOST_URL: ${VOTING_API_HOST_URL:-https://voting.gautamkaran.in}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-votingApp}
       ACCESS_TOKEN_EXPIRY: ${ACCESS_TOKEN_EXPIRY:-1d}
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET:-KaranGuatam}
       REFRESH_TOKEN_EXPIRY: ${REFRESH_TOKEN_EXPIRY:-10d}
     depends_on:
       - mongodb
+    networks:
+      - voting-network
 
   mongodb:
     image: mongo:latest
     restart: unless-stopped
     hostname: mongodb
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - voting-network
 
 volumes:
   mongo-data:
+
+networks:
+  voting-network:
+    driver: bridge
