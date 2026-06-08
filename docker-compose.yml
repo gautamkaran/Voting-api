@@ -1,31 +1,42 @@
 services:
   voting-api:
     build: .
-    restart: unless-stopped
+    container_name: voting-api
     hostname: voting-api
-    
-    ports:
-      - "3000"
+    restart: unless-stopped
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.voiting.rule=Host(`voiting.${TRAEFIK_HOST}`)
+      - traefik.http.routers.voiting.entrypoints=websecure
+      - traefik.http.routers.voiting.tls.certresolver=letsencrypt
+      - traefik.http.services.voiting.loadbalancer.server.port=3000
+
     environment:
       PORT: ${PORT:-3000}
-      MONGODB_URL: ${MONGODB_URL:-mongodb://mongodb:27017}
+      MONGODB_URL: ${MONGODB_URL}
       CORS_ORIGIN: ${CORS_ORIGIN}
       VOTING_API_HOST_URL: ${VOTING_API_HOST_URL}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       ACCESS_TOKEN_EXPIRY: ${ACCESS_TOKEN_EXPIRY}
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
       REFRESH_TOKEN_EXPIRY: ${REFRESH_TOKEN_EXPIRY}
+
     depends_on:
       - mongodb
+
     networks:
       - voting-network
 
   mongodb:
     image: mongo:latest
-    restart: unless-stopped
+    container_name: voting-mongodb
     hostname: mongodb
+    restart: unless-stopped
+
     volumes:
       - mongo-data:/data/db
+
     networks:
       - voting-network
 
